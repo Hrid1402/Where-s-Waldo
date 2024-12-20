@@ -1,33 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+import 'ldrs/bouncy';
+import './styles/App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate();
+  const [users, setUsers] = useState(null);
+  useEffect(()=>{
+      fetch("https://where-s-waldo-api.onrender.com/users").then(r=>r.json()).then(r=>setUsers(r))
+    },[])
 
+  React.useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [])
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <h1>Where's Waldo?</h1>
+      <div className='maps'>
+        <button className='map' onClick={()=>{navigate('/game')}}>
+          <h2>Start Game!</h2>
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className='scores'>
+        <div className='content'>
+        <h2>Score Table</h2>
+        {
+            !users ?
+            <div className='loadingRow'>
+              <l-bouncy
+              size="75"
+              speed="1.75" 
+              color="black" 
+            ></l-bouncy>
+            </div>
+            
+            :
+            users && users.map(u=>{
+              return (
+              <div className='userRow' key={u.id}>
+                <h2>{u.name}</h2>
+                <h2>{u.time}</h2>
+              </div>)
+            })
+          }
+        </div>
+          
+      </div>
+
     </>
   )
 }
